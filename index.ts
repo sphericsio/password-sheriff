@@ -1,28 +1,30 @@
-var charsets = require('./lib/rules/contains').charsets;
+import PasswordPolicy from './lib/policy';
+import {charsets} from './lib/rules/contains';
 
-var upperCase = charsets.upperCase;
-var lowerCase = charsets.lowerCase;
-var numbers = charsets.numbers;
-var specialCharacters = charsets.specialCharacters;
+export {default as PasswordPolicy} from './lib/policy';
+export {charsets} from './lib/rules/contains';
 
-var PasswordPolicy = require('./lib/policy');
+const upperCase = charsets.upperCase;
+const lowerCase = charsets.lowerCase;
+const numbers = charsets.numbers;
+const specialCharacters = charsets.specialCharacters;
 
-var none = new PasswordPolicy({
+const none = new PasswordPolicy({
     length: {minLength: 1},
 });
 
-var low = new PasswordPolicy({
+const low = new PasswordPolicy({
     length: {minLength: 6},
 });
 
-var fair = new PasswordPolicy({
+const fair = new PasswordPolicy({
     length: {minLength: 8},
     contains: {
         expressions: [lowerCase, upperCase, numbers],
     },
 });
 
-var good = new PasswordPolicy({
+const good = new PasswordPolicy({
     length: {minLength: 8},
     containsAtLeast: {
         atLeast: 3,
@@ -30,7 +32,7 @@ var good = new PasswordPolicy({
     },
 });
 
-var excellent = new PasswordPolicy({
+const excellent = new PasswordPolicy({
     length: {minLength: 10},
     containsAtLeast: {
         atLeast: 3,
@@ -39,7 +41,7 @@ var excellent = new PasswordPolicy({
     identicalChars: {max: 2},
 });
 
-var policiesByName = {
+const policiesByName: Record<string, PasswordPolicy<any>> = {
     none: none,
     low: low,
     fair: fair,
@@ -52,8 +54,8 @@ var policiesByName = {
  *
  * @param {String} policyName Name of policy to use.
  */
-module.exports = function (policyName) {
-    var policy = policiesByName[policyName] || policiesByName.none;
+export default function (policyName: string) {
+    const policy = policiesByName[policyName] || policiesByName.none;
 
     return {
         /**
@@ -62,7 +64,7 @@ module.exports = function (policyName) {
          * @method check
          * @param {String} password
          */
-        check: function (password) {
+        check: function (password: string) {
             return policy.check(password);
         },
         /**
@@ -71,15 +73,15 @@ module.exports = function (policyName) {
          *
          * @param {String} password
          */
-        assert: function (password) {
+        assert: function (password: string) {
             return policy.assert(password);
         },
 
-        missing: function (password) {
+        missing: function (password: string) {
             return policy.missing(password);
         },
 
-        missingAsMarkdown: function (password) {
+        missingAsMarkdown: function (password: string) {
             return policy.missingAsMarkdown(password);
         },
 
@@ -95,10 +97,4 @@ module.exports = function (policyName) {
             return policy.toString();
         },
     };
-};
-
-module.exports.PasswordPolicy = PasswordPolicy;
-
-module.exports.charsets = charsets;
-
-// module.exports.rulesToApply = rulesToApply;
+}

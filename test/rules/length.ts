@@ -1,28 +1,25 @@
-var expect = require('chai').expect;
+import {expect} from 'chai';
 
-var length = require('../../lib/rules/length');
+import length from '../../lib/rules/length';
 
-function nonEmptyMsg(verified) {
-    var d = {message: 'Non-empty password required', code: 'nonEmpty'};
-    if (verified !== undefined) {
-        d.verified = verified;
-    }
-    return d;
+function nonEmptyMsg(verified?: boolean) {
+    return {
+        ...(verified == null ? {} : {verified}),
+        message: 'Non-empty password required',
+        code: 'nonEmpty',
+    };
 }
 
-function atLeast(x, verified) {
-    var d = {
+function atLeast(x: number, verified?: boolean) {
+    return {
+        ...(verified == null ? {} : {verified}),
         message: 'At least %d characters in length',
         code: 'lengthAtLeast',
         format: [x],
     };
-    if (verified !== undefined) {
-        d.verified = verified;
-    }
-    return d;
 }
 
-function lengthValidate(minLength) {
+function lengthValidate(minLength: number) {
     return function () {
         length.validate({minLength: minLength});
     };
@@ -30,13 +27,19 @@ function lengthValidate(minLength) {
 
 describe('"length" rule', function () {
     describe('validate', function () {
-        var errorRegex = /length expects minLength to be a non-zero number/;
+        const errorRegex = /length expects minLength to be a non-zero number/;
         it('should fail when minLength is not a number or zero', function () {
+            // @ts-expect-error testing runtime validation
             expect(lengthValidate(null)).to.throw(errorRegex);
+            // @ts-expect-error testing runtime validation
             expect(lengthValidate(undefined)).to.throw(errorRegex);
+            // @ts-expect-error testing runtime validation
             expect(lengthValidate(false)).to.throw(errorRegex);
+            // @ts-expect-error testing runtime validation
             expect(lengthValidate(true)).to.throw(errorRegex);
+            // @ts-expect-error testing runtime validation
             expect(lengthValidate('hello')).to.throw(errorRegex);
+            // @ts-expect-error testing runtime validation
             expect(lengthValidate('123')).to.throw(errorRegex);
         });
         it('should work otherwise', function () {

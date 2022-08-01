@@ -1,46 +1,42 @@
-var _ = require('../../lib/helper');
+import {expect} from 'chai';
+import {PasswordCharset} from '../../lib/rules/contains';
 
-var expect = require('chai').expect;
+import containsAtLeast, {charsets} from '../../lib/rules/containsAtLeast';
+import {PasswordPolicyRuleExplaination} from '../../lib/rules/types';
 
-var containsAtLeast = require('../../lib/rules/containsAtLeast');
-
-var charsets = containsAtLeast.charsets;
-
-function createMissingEntry(x, y, items, verified) {
-    var d = {
+function createMissingEntry(
+    x: number,
+    y: number,
+    items: PasswordPolicyRuleExplaination[],
+    verified?: boolean,
+) {
+    return {
+        ...(verified == null ? {} : {verified}),
         message: 'At least %d of the following %d types of characters:',
         code: 'containsAtLeast',
         format: [x, y],
         items: items,
     };
-    if (verified !== undefined) {
-        d.verified = verified;
-    }
-    return d;
 }
 
-function generateMessageFn(msg, code) {
-    return function (verified) {
-        var d = {message: msg, code: code};
-        if (verified !== undefined) {
-            d.verified = verified;
-        }
-        return d;
+function generateMessageFn(msg: string, code: string) {
+    return function (verified?: boolean) {
+        return {...(verified == null ? {} : {verified}), message: msg, code: code};
     };
 }
 
-var lowerCaseMessage = generateMessageFn('lower case letters (a-z)', 'lowerCase');
-var upperCaseMessage = generateMessageFn('upper case letters (A-Z)', 'upperCase');
-var numbersMessage = generateMessageFn('numbers (i.e. 0-9)', 'numbers');
-var specialCharsMessage = generateMessageFn(
+const lowerCaseMessage = generateMessageFn('lower case letters (a-z)', 'lowerCase');
+const upperCaseMessage = generateMessageFn('upper case letters (A-Z)', 'upperCase');
+const numbersMessage = generateMessageFn('numbers (i.e. 0-9)', 'numbers');
+const specialCharsMessage = generateMessageFn(
     'special characters (e.g. !@#$%^&*)',
     'specialCharacters',
 );
 
-function fourMessages(a, b, c, d) {
+function fourMessages(a?: boolean, b?: boolean, c?: boolean, d?: boolean) {
     return [lowerCaseMessage(a), upperCaseMessage(b), numbersMessage(c), specialCharsMessage(d)];
 }
-var fourCharsets = [
+const fourCharsets = [
     charsets.lowerCase,
     charsets.upperCase,
     charsets.numbers,
@@ -51,7 +47,7 @@ function createOptions(charsets) {
     return {atLeast: 3, expressions: charsets};
 }
 
-function containsAtLeastValidate(atLeast, expressions) {
+function containsAtLeastValidate(atLeast: number, expressions: PasswordCharset[]) {
     return function () {
         return containsAtLeast.validate({atLeast: atLeast, expressions: expressions});
     };
@@ -60,56 +56,69 @@ function containsAtLeastValidate(atLeast, expressions) {
 describe('"contains at least" rule', function () {
     describe('validate', function () {
         it('should fail if atLeast is not a number greater than 0', function () {
-            var errorRegex = /atLeast should be a valid, non-NaN number, greater than 0/;
+            const errorRegex = /atLeast should be a valid, non-NaN number, greater than 0/;
 
+            // @ts-expect-error testing runtime validation
             expect(containsAtLeastValidate(-34)).to.throw(errorRegex);
+            // @ts-expect-error testing runtime validation
             expect(containsAtLeastValidate(0)).to.throw(errorRegex);
+            // @ts-expect-error testing runtime validation
             expect(containsAtLeastValidate('hello')).to.throw(errorRegex);
+            // @ts-expect-error testing runtime validation
             expect(containsAtLeastValidate(undefined)).to.throw(errorRegex);
+            // @ts-expect-error testing runtime validation
             expect(containsAtLeastValidate(false)).to.throw(errorRegex);
+            // @ts-expect-error testing runtime validation
             expect(containsAtLeastValidate(true)).to.throw(errorRegex);
         });
 
         it('should fail if expressions is empty or not an array', function () {
-            var errorRegex = /expressions should be an non-empty array/;
+            const errorRegex = /expressions should be an non-empty array/;
 
             expect(containsAtLeastValidate(3, [])).to.throw(errorRegex);
+            // @ts-expect-error testing runtime validation
             expect(containsAtLeastValidate(3, undefined)).to.throw(errorRegex);
+            // @ts-expect-error testing runtime validation
             expect(containsAtLeastValidate(3, null)).to.throw(errorRegex);
+            // @ts-expect-error testing runtime validation
             expect(containsAtLeastValidate(3, true)).to.throw(errorRegex);
         });
 
         it('should fail if expressions array contains invalid items', function () {
-            var entry = {test: _.identity, explain: _.identity};
-            var errorRegex = /containsAtLeast expressions are invalid: An explain and a test function should be provided/;
+            const entry = {test: () => false, explain: () => ({message: '', code: ''})};
+            const errorRegex = /containsAtLeast expressions are invalid: An explain and a test function should be provided/;
+            // @ts-expect-error testing runtime validation
             expect(containsAtLeastValidate(3, [1, 2, 3])).to.throw(errorRegex);
+            // @ts-expect-error testing runtime validation
             expect(containsAtLeastValidate(3, ['hi', 'bye', 'woot'], entry, entry)).to.throw(
                 errorRegex,
             );
             expect(
+                // @ts-expect-error testing runtime validation
                 containsAtLeastValidate(3, [{test: 'hi', explain: 'bye'}, entry, entry]),
             ).to.throw(errorRegex);
             expect(
-                containsAtLeastValidate(3, [{test: _.identity, explain: 'bye'}, entry, entry]),
+                // @ts-expect-error testing runtime validation
+                containsAtLeastValidate(3, [{test: () => false, explain: 'bye'}, entry, entry]),
             ).to.throw(errorRegex);
         });
 
         it('should fail if expressions array length is less than atLeast', function () {
-            var errorRegex = /expressions length should be greater than atLeast/;
-            var entry = {test: _.identity, explain: _.identity};
+            const errorRegex = /expressions length should be greater than atLeast/;
+            const entry = {test: () => false, explain: () => ({message: '', code: ''})};
             expect(containsAtLeastValidate(3, [entry, entry])).to.throw(errorRegex);
         });
 
         it('should work otherwise', function () {
-            var entry = {test: _.identity, explain: _.identity};
+            const entry = {test: () => false, explain: () => ({message: '', code: ''})};
             expect(containsAtLeastValidate(3, [entry, entry, entry])).not.to.throw();
         });
     });
 
-    var explained;
+    let explained;
     describe('explain', function () {
         it('should return list with contained expressions', function () {
-            var result = createMissingEntry(3, 4, fourMessages());
+            const result = createMissingEntry(3, 4, fourMessages());
             expect(
                 containsAtLeast.explain({atLeast: 3, expressions: fourCharsets}),
             ).to.be.deep.equal(result);
@@ -117,7 +126,7 @@ describe('"contains at least" rule', function () {
     });
 
     describe('missing', function () {
-        var state = [
+        const state = [
             [false, false, false, false],
             [true, false, false, false],
             [true, true, false, false],
@@ -128,34 +137,34 @@ describe('"contains at least" rule', function () {
         it('should return structure that explains what is missing', function () {
             explained = containsAtLeast.missing(createOptions(fourCharsets), '');
             expect(explained).to.be.deep.equal(
-                createMissingEntry(3, 4, fourMessages.apply(null, state[0]), false),
+                createMissingEntry(3, 4, fourMessages(...state[0]), false),
             );
 
             explained = containsAtLeast.missing(createOptions(fourCharsets), 'hello');
             expect(explained).to.be.deep.equal(
-                createMissingEntry(3, 4, fourMessages.apply(null, state[1]), false),
+                createMissingEntry(3, 4, fourMessages(...state[1]), false),
             );
 
             explained = containsAtLeast.missing(createOptions(fourCharsets), 'helloO');
             expect(explained).to.be.deep.equal(
-                createMissingEntry(3, 4, fourMessages.apply(null, state[2]), false),
+                createMissingEntry(3, 4, fourMessages(...state[2]), false),
             );
 
             explained = containsAtLeast.missing(createOptions(fourCharsets), 'hello!');
             expect(explained).to.be.deep.equal(
-                createMissingEntry(3, 4, fourMessages.apply(null, state[3]), false),
+                createMissingEntry(3, 4, fourMessages(...state[3]), false),
             );
         });
 
         it('should return an structure with verified == true when fulfilled', function () {
             explained = containsAtLeast.missing(createOptions(fourCharsets), 'helloO9');
             expect(explained).to.be.deep.equal(
-                createMissingEntry(3, 4, fourMessages.apply(null, state[4]), true),
+                createMissingEntry(3, 4, fourMessages(...state[4]), true),
             );
 
             explained = containsAtLeast.missing(createOptions(fourCharsets), 'helloO9!');
             expect(explained).to.be.deep.equal(
-                createMissingEntry(3, 4, fourMessages.apply(null, state[5]), true),
+                createMissingEntry(3, 4, fourMessages(...state[5]), true),
             );
         });
     });

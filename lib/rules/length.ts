@@ -1,15 +1,21 @@
-var _ = require('../helper');
-
 /* A rule should contain explain and rule methods */
 // TODO explain explain
 // TODO explain missing
 // TODO explain assert
 
-function assert(options, password) {
+import {isNumber, isObject} from 'lodash';
+
+import type {PasswordPolicyRule} from './types';
+
+type LengthOptions = {
+    minLength: number;
+};
+
+function assert(options: LengthOptions, password: string) {
     return !!password && options.minLength <= password.length;
 }
 
-function explain(options) {
+function explain(options: LengthOptions) {
     if (options.minLength === 1) {
         return {
             message: 'Non-empty password required',
@@ -24,23 +30,26 @@ function explain(options) {
     };
 }
 
-module.exports = {
+const rule: PasswordPolicyRule<LengthOptions> = {
     validate: function (options) {
-        if (!_.isObject(options)) {
+        if (!isObject(options)) {
             throw new Error('options should be an object');
         }
 
-        if (!_.isNumber(options.minLength) || _.isNaN(options.minLength)) {
+        if (!isNumber(options.minLength) || isNaN(options.minLength)) {
             throw new Error('length expects minLength to be a non-zero number');
         }
 
         return true;
     },
     explain: explain,
-    missing: function (options, password) {
-        var explained = explain(options);
-        explained.verified = !!assert(options, password);
-        return explained;
+    missing: function (options, password: string) {
+        return {
+            ...explain(options),
+            verified: !!assert(options, password),
+        };
     },
     assert: assert,
 };
+
+export default rule;

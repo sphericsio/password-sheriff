@@ -1,11 +1,11 @@
-var assert = require('assert');
+import assert from 'assert';
 
-var format = require('../lib/helper').format;
+import {format} from '../lib/helper';
 
-var PasswordPolicy = require('..').PasswordPolicy;
+import {PasswordPolicy} from '..';
 
 // Create a length password policy
-var lengthPolicy = new PasswordPolicy({length: {minLength: 6}});
+const lengthPolicy = new PasswordPolicy({length: {minLength: 6}});
 
 // throws if password does not meet criteria
 try {
@@ -19,7 +19,7 @@ try {
 assert.equal(false, lengthPolicy.check('hello'));
 
 // explains the policy
-var explained = lengthPolicy.explain();
+const explained = lengthPolicy.explain();
 
 assert.equal(1, explained.length);
 

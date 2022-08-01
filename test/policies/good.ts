@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
+import {expect} from 'chai';
 
-var createPolicy = require('../../index');
+import createPolicy from '../..';
 
-var goodPolicyDescription =
+const goodPolicyDescription =
     '* At least 8 characters in length\n' +
     '* At least 3 of the following 4 types of characters:\n' +
     ' * lower case letters (a-z)\n' +
@@ -10,9 +10,9 @@ var goodPolicyDescription =
     ' * numbers (i.e. 0-9)\n' +
     ' * special characters (e.g. !@#$%^&*)';
 
-describe('good policy ' + goodPolicyDescription, function () {
+describe('good policy:\n' + goodPolicyDescription, function () {
     describe('check', function () {
-        var policy = createPolicy('good');
+        const policy = createPolicy('good');
         it('should fail with password length of less than 8 characters', function () {
             expect(policy.check('')).to.be.equal(false);
             expect(policy.check('hello')).to.be.equal(false);
@@ -70,7 +70,7 @@ describe('good policy ' + goodPolicyDescription, function () {
     });
     describe('toString', function () {
         it('should describe policy correctly', function () {
-            var policy = createPolicy('good');
+            const policy = createPolicy('good');
             expect(policy.toString()).to.equal(goodPolicyDescription);
         });
     });

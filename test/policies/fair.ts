@@ -1,23 +1,28 @@
-var expect = require('chai').expect;
+import {expect} from 'chai';
 
-var createPolicy = require('../../index');
+import createPolicy from '../..';
 
-var fairPolicyDescription =
+const fairPolicyDescription =
     '* At least 8 characters in length\n' +
     '* Should contain:\n' +
     ' * lower case letters (a-z)\n' +
     ' * upper case letters (A-Z)\n' +
     ' * numbers (i.e. 0-9)';
 
-describe('fair policy' + fairPolicyDescription, function () {
-    var policy = createPolicy('fair');
+describe('fair policy:\n' + fairPolicyDescription, function () {
+    const policy = createPolicy('fair');
 
     describe('check', function () {
         it('should fail with invalid values', function () {
+            // @ts-expect-error testing runtime validation
             expect(policy.check(undefined)).to.be.equal(false);
+            // @ts-expect-error testing runtime validation
             expect(policy.check(null)).to.be.equal(false);
+            // @ts-expect-error testing runtime validation
             expect(policy.check(0)).to.be.equal(false);
+            // @ts-expect-error testing runtime validation
             expect(policy.check([])).to.be.equal(false);
+            // @ts-expect-error testing runtime validation
             expect(policy.check({})).to.be.equal(false);
         });
 
@@ -46,7 +51,7 @@ describe('fair policy' + fairPolicyDescription, function () {
     });
     describe('toString', function () {
         it('should describe policy correctly', function () {
-            var policy = createPolicy('fair');
+            const policy = createPolicy('fair');
             expect(policy.toString()).to.equal(fairPolicyDescription);
         });
     });

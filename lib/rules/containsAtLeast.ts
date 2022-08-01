@@ -1,23 +1,30 @@
-var _ = require('../helper');
+import {isObject, isNumber, isEmpty, isFunction} from 'lodash';
 
-var contains = require('./contains');
+import {PasswordCharset} from './contains';
+import type {PasswordPolicyRule} from './types';
+
+export {charsets} from './contains';
 
 function createIntroMessage() {
     return 'At least %d of the following %d types of characters:';
 }
 
-module.exports = {
+type ContainsAtLeastOptions = {
+    atLeast: number;
+    expressions: PasswordCharset[];
+};
+const rule: PasswordPolicyRule<ContainsAtLeastOptions> = {
     // TODO validate atLeast to be a number > 0 and expressions to be a list of at least 1
     validate: function (options) {
-        if (!_.isObject(options)) {
+        if (!isObject(options)) {
             throw new Error('options should be an object');
         }
 
-        if (!_.isNumber(options.atLeast) || _.isNaN(options.atLeast) || options.atLeast < 1) {
+        if (!isNumber(options.atLeast) || isNaN(options.atLeast) || options.atLeast < 1) {
             throw new Error('atLeast should be a valid, non-NaN number, greater than 0');
         }
 
-        if (!_.isArray(options.expressions) || _.isEmpty(options.expressions)) {
+        if (!Array.isArray(options.expressions) || isEmpty(options.expressions)) {
             throw new Error('expressions should be an non-empty array');
         }
 
@@ -25,8 +32,8 @@ module.exports = {
             throw new Error('expressions length should be greater than atLeast');
         }
 
-        var ok = options.expressions.every(function (expression) {
-            return _.isFunction(expression.explain) && _.isFunction(expression.test);
+        const ok = options.expressions.every(function (expression) {
+            return isFunction(expression.explain) && isFunction(expression.test);
         });
 
         if (!ok) {
@@ -48,18 +55,19 @@ module.exports = {
         };
     },
     missing: function (options, password) {
-        var expressions =
+        const expressions =
             options.expressions &&
             options.expressions.map(function (expression) {
-                var explained = expression.explain();
-                explained.verified = expression.test(password);
-                return explained;
+                return {
+                    ...expression.explain(),
+                    verified: expression.test(password),
+                };
             });
 
-        var verifiedCount = expressions.reduce(function (val, ex) {
-            return val + !!ex.verified;
+        const verifiedCount = expressions.reduce(function (val, ex) {
+            return val + (ex.verified ? 1 : 0);
         }, 0);
-        var verified = verifiedCount >= options.atLeast;
+        const verified = verifiedCount >= options.atLeast;
 
         return {
             message: createIntroMessage(),
@@ -74,11 +82,12 @@ module.exports = {
             return false;
         }
 
-        var workingExpressions = options.expressions.filter(function (expression) {
+        const workingExpressions = options.expressions.filter(function (expression) {
             return expression.test(password);
         });
 
         return workingExpressions.length >= options.atLeast;
     },
-    charsets: contains.charsets,
 };
+
+export default rule;

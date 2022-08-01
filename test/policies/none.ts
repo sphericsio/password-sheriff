@@ -1,17 +1,22 @@
-var expect = require('chai').expect;
+import {expect} from 'chai';
 
-var createPolicy = require('../../index');
+import createPolicy from '../..';
 
-var nonePolicyDescription = '* Non-empty password required';
+const nonePolicyDescription = '* Non-empty password required';
 
-describe('none policy: ' + nonePolicyDescription, function () {
-    var policy = createPolicy(undefined);
+describe('none policy:\n' + nonePolicyDescription, function () {
+    const policy = createPolicy('none');
     describe('check', function () {
         it('should fail with invalid values', function () {
+            // @ts-expect-error testing runtime validation
             expect(policy.check(undefined)).to.be.equal(false);
+            // @ts-expect-error testing runtime validation
             expect(policy.check(null)).to.be.equal(false);
+            // @ts-expect-error testing runtime validation
             expect(policy.check(0)).to.be.equal(false);
+            // @ts-expect-error testing runtime validation
             expect(policy.check([])).to.be.equal(false);
+            // @ts-expect-error testing runtime validation
             expect(policy.check({})).to.be.equal(false);
         });
 
@@ -24,7 +29,7 @@ describe('none policy: ' + nonePolicyDescription, function () {
     });
     describe('missing', function () {
         it('should inform verified false when fails', function () {
-            var result = policy.missing('');
+            const result = policy.missing('');
 
             expect(result.verified).to.be.equal(false);
             expect(result.rules.length).to.be.equal(1);
@@ -32,7 +37,7 @@ describe('none policy: ' + nonePolicyDescription, function () {
             expect(result.rules[0].verified).to.be.equal(false);
         });
         it('should inform verified true otherwise', function () {
-            var result = policy.missing('hello');
+            const result = policy.missing('hello');
 
             expect(result.verified).to.be.equal(true);
             expect(result.rules.length).to.be.equal(1);

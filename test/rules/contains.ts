@@ -1,51 +1,46 @@
-var _ = require('../../lib/helper');
-var expect = require('chai').expect;
+import {expect} from 'chai';
 
-var contains = require('../../lib/rules/contains');
+import contains, {charsets, PasswordCharset} from '../../lib/rules/contains';
+import {PasswordPolicyRuleExplaination} from '../../lib/rules/types';
 
-var charsets = contains.charsets;
+const specialCharactersRegexp = charsets.specialCharacters;
 
-var specialCharactersRegexp = charsets.specialCharacters;
+const upperAndSpecial = [charsets.upperCase, charsets.specialCharacters];
 
-var upperAndSpecial = [charsets.upperCase, charsets.specialCharacters];
-
-function upperCaseMessage(verified) {
-    var d = {message: 'upper case letters (A-Z)', code: 'upperCase'};
-    if (verified !== undefined) {
-        d.verified = verified;
-    }
-    return d;
+function upperCaseMessage(verified?: boolean) {
+    return {
+        ...(verified == null ? {} : {verified}),
+        message: 'upper case letters (A-Z)',
+        code: 'upperCase',
+    };
 }
-function specialCharsMessage(verified) {
-    var d = {message: 'special characters (e.g. !@#$%^&*)', code: 'specialCharacters'};
-    if (verified !== undefined) {
-        d.verified = verified;
-    }
-    return d;
+function specialCharsMessage(verified?: boolean) {
+    return {
+        ...(verified == null ? {} : {verified}),
+        message: 'special characters (e.g. !@#$%^&*)',
+        code: 'specialCharacters',
+    };
 }
 
-function createMissingEntry(items, verified) {
-    var d = {
+function createMissingEntry(items: PasswordPolicyRuleExplaination[], verified?: boolean) {
+    return {
+        ...(verified == null ? {} : {verified}),
         message: 'Should contain:',
         code: 'shouldContain',
         items: items,
     };
-    if (verified !== undefined) {
-        d.verified = verified;
-    }
-    return d;
 }
 
-function containsValidate(expressions) {
+function containsValidate(expressions: PasswordCharset[]) {
     return function () {
-        return contains.validate({expressions: expressions});
+        return contains.validate({expressions});
     };
 }
 
 describe('"contains" rule', function () {
     describe('explain', function () {
         it('should return list with contained expressions', function () {
-            var explained = contains.explain({expressions: upperAndSpecial});
+            const explained = contains.explain({expressions: upperAndSpecial});
             expect(explained).to.be.deep.equal(
                 createMissingEntry([upperCaseMessage(), specialCharsMessage()]),
             );
@@ -54,34 +49,44 @@ describe('"contains" rule', function () {
 
     describe('validate', function () {
         it('should fail if expressions is not an array', function () {
-            var errorRegex = /contains expects expressions to be a non-empty array/;
+            const errorRegex = /contains expects expressions to be a non-empty array/;
+            // @ts-expect-error testing errors
             expect(containsValidate(null)).to.throw(errorRegex);
+            // @ts-expect-error testing errors
             expect(containsValidate(false)).to.throw(errorRegex);
+            // @ts-expect-error testing errors
             expect(containsValidate(true)).to.throw(errorRegex);
+            // @ts-expect-error testing errors
             expect(containsValidate('hello')).to.throw(errorRegex);
         });
 
         it('should fail if expressions array contains invalid items', function () {
-            var errorRegex = /contains expressions are invalid: An explain and a test function should be provided/;
+            const errorRegex = /contains expressions are invalid: An explain and a test function should be provided/;
+            // @ts-expect-error testing errors
             expect(containsValidate([1, 2, 3])).to.throw(errorRegex);
+            // @ts-expect-error testing errors
             expect(containsValidate(['hi'])).to.throw(errorRegex);
+            // @ts-expect-error testing errors
             expect(containsValidate([{test: 'hi', explain: 'bye'}])).to.throw(errorRegex);
-            expect(containsValidate([{test: _.identity, explain: 'bye'}])).to.throw(errorRegex);
+            // @ts-expect-error testing errors
+            expect(containsValidate([{test: () => false, explain: 'bye'}])).to.throw(errorRegex);
         });
 
         it('should fail if expressions is an empty array', function () {
-            var errorRegex = /ontains expects expressions to be a non-empty array/;
+            const errorRegex = /ontains expects expressions to be a non-empty array/;
             expect(containsValidate([])).to.throw(errorRegex);
         });
 
         it('should work otherwise', function () {
-            expect(containsValidate([{test: _.identity, explain: _.identity}])).not.to.throw();
+            expect(
+                containsValidate([{test: () => false, explain: () => ({message: '', code: ''})}]),
+            ).not.to.throw();
         });
     });
 
     describe('assert missing', function () {
         it('should return a structure with failed expressions', function () {
-            var explained = contains.missing({expressions: upperAndSpecial}, 'hello');
+            let explained = contains.missing({expressions: upperAndSpecial}, 'hello');
             expect(explained).to.be.deep.equal(
                 createMissingEntry([upperCaseMessage(false), specialCharsMessage(false)], false),
             );
@@ -111,7 +116,7 @@ describe('"contains" rule', function () {
 
     describe('specialCharactersRegexp', function () {
         it('should handle all OWASP symbols correctly', function () {
-            var symbols = [
+            const symbols = [
                 ' ',
                 '!',
                 '"',
@@ -149,7 +154,7 @@ describe('"contains" rule', function () {
 
             expect(
                 symbols.every(function (symbol) {
-                    var value = specialCharactersRegexp.test(symbol);
+                    const value = specialCharactersRegexp.test(symbol);
                     if (!value) {
                         throw symbol;
                     }
@@ -159,11 +164,11 @@ describe('"contains" rule', function () {
         });
 
         it('should not handle characters that are non-symbols', function () {
-            var alphanum = 'abcdefghijklmnopqrstuvwxyz0123456789'.split('');
+            const alphanum = 'abcdefghijklmnopqrstuvwxyz0123456789'.split('');
 
             expect(
                 alphanum.some(function (symbol) {
-                    var value = specialCharactersRegexp.test(symbol);
+                    const value = specialCharactersRegexp.test(symbol);
                     if (value) {
                         throw symbol;
                     }

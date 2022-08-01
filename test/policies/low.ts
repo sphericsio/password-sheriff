@@ -1,18 +1,23 @@
-var expect = require('chai').expect;
+import {expect} from 'chai';
 
-var createPolicy = require('../../index');
+import createPolicy from '../..';
 
-var lowPolicyDescription = '* At least 6 characters in length';
+const lowPolicyDescription = '* At least 6 characters in length';
 
-describe('low policy:' + lowPolicyDescription, function () {
-    var policy = createPolicy('low');
+describe('low policy:\n' + lowPolicyDescription, function () {
+    const policy = createPolicy('low');
 
     describe('check', function () {
         it('should fail with invalid values', function () {
+            // @ts-expect-error testing runtime validation
             expect(policy.check(undefined)).to.be.equal(false);
+            // @ts-expect-error testing runtime validation
             expect(policy.check(null)).to.be.equal(false);
+            // @ts-expect-error testing runtime validation
             expect(policy.check(0)).to.be.equal(false);
+            // @ts-expect-error testing runtime validation
             expect(policy.check([])).to.be.equal(false);
+            // @ts-expect-error testing runtime validation
             expect(policy.check({})).to.be.equal(false);
         });
 
@@ -28,7 +33,7 @@ describe('low policy:' + lowPolicyDescription, function () {
     });
     describe('toString', function () {
         it('should describe policy correctly', function () {
-            var policy = createPolicy('low');
+            const policy = createPolicy('low');
             expect(policy.toString()).to.equal(lowPolicyDescription);
         });
     });

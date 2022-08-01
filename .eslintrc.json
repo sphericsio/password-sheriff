@@ -1,10 +1,6 @@
 {
-    "extends": [
-        "@sphericsio"
-    ],
-    "ignorePatterns": [
-        "build"
-    ],
+    "extends": ["@sphericsio"],
+    "ignorePatterns": ["build"],
     "env": {
         "es6": true,
         "commonjs": true
@@ -12,13 +8,24 @@
     "rules": {
         "@typescript-eslint/camelcase": "off",
         "@typescript-eslint/explicit-module-boundary-types": "off",
-        "@typescript-eslint/no-unused-vars": ["warn", {"argsIgnorePattern": "^_", "varsIgnorePattern": "^_"}]
+        "@typescript-eslint/no-unused-vars": [
+            "warn",
+            {"argsIgnorePattern": "^_", "varsIgnorePattern": "^_"}
+        ]
     },
-    "overrides": [{
-        "files": "test/**/*.js",
-        "env": {
-            "mocha": true
+    "overrides": [
+        {
+            "files": "test/**/*.ts",
+            "env": {
+                "mocha": true
+            },
+            "plugins": ["mocha"]
         },
-        "plugins": ["mocha"]
-    }]
+        {
+            "files": "examples/**/*.ts",
+            "env": {
+                "node": true
+            }
+        }
+    ]
 }

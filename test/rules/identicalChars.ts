@@ -1,18 +1,19 @@
-var expect = require('chai').expect;
+import {expect} from 'chai';
 
-var identicalChars = require('../../lib/rules/identicalChars');
+import identicalChars from '../../lib/rules/identicalChars';
 
-function identicalCharsMessage(x, verified) {
-    var a = new Array(x + 2).join('a');
-    var msg = 'No more than %d identical characters in a row (e.g., "%s" not allowed)';
-    var d = {message: msg, format: [x, a], code: 'identicalChars'};
-    if (verified !== undefined) {
-        d.verified = verified;
-    }
-    return d;
+function identicalCharsMessage(x: number, verified?: boolean) {
+    const a = new Array(x + 2).join('a');
+    const msg = 'No more than %d identical characters in a row (e.g., "%s" not allowed)';
+    return {
+        ...(verified == null ? {} : {verified}),
+        message: msg,
+        format: [x, a],
+        code: 'identicalChars',
+    };
 }
 
-function identicalCharsValidate(max) {
+function identicalCharsValidate(max: number) {
     return function () {
         return identicalChars.validate({max: max});
     };
@@ -21,11 +22,14 @@ function identicalCharsValidate(max) {
 describe('"identical characters" rule', function () {
     describe('validate', function () {
         it('should fail if max is not a number or less than 1', function () {
-            var errorRegex = /max should be a number greater than 1/;
+            const errorRegex = /max should be a number greater than 1/;
 
+            // @ts-expect-error testing runtime validation
             expect(identicalCharsValidate(false)).to.throw(errorRegex);
             expect(identicalCharsValidate(0)).to.throw(errorRegex);
+            // @ts-expect-error testing runtime validation
             expect(identicalCharsValidate('hello')).to.throw(errorRegex);
+            // @ts-expect-error testing runtime validation
             expect(identicalCharsValidate(undefined)).to.throw(errorRegex);
         });
         it('should work otherwise', function () {

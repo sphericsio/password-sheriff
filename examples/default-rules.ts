@@ -1,6 +1,6 @@
-var assert = require('assert');
+import assert from 'assert';
 
-var PasswordPolicy = require('..').PasswordPolicy;
+import {PasswordPolicy, charsets} from '..';
 
 /* The default Password Sheriff rules are:
  *  * length
@@ -17,7 +17,7 @@ var PasswordPolicy = require('..').PasswordPolicy;
  * Specify the minimum amount of characters a password must have using the
  * `minLength` argument.
  */
-var lengthPolicy = new PasswordPolicy({length: {minLength: 3}});
+const lengthPolicy = new PasswordPolicy({length: {minLength: 3}});
 
 assert.equal(false, lengthPolicy.check('f'));
 assert.equal(false, lengthPolicy.check('fo'));
@@ -35,14 +35,12 @@ assert.equal(true, lengthPolicy.check('foobar'));
  * OWASP Password Policy recommendation document).
  */
 
-var charsets = require('../lib/rules/contains').charsets;
-
 // var lowerCase         = charsets.lowerCase;
 // var specialCharacters = charsets.specialCharacters;
-var upperCase = charsets.upperCase;
-var numbers = charsets.numbers;
+const upperCase = charsets.upperCase;
+const numbers = charsets.numbers;
 
-var containsPolicy = new PasswordPolicy({
+const containsPolicy = new PasswordPolicy({
     contains: {
         expressions: [upperCase, numbers],
     },
@@ -61,15 +59,10 @@ assert.equal(true, containsPolicy.check('B9'));
  * Passwords should contain at least `atLeast` of a total of `expressions.length`
  * groups.
  */
-
-var charsets = require('../lib/rules/containsAtLeast').charsets;
-
-var lowerCase = charsets.lowerCase;
+const lowerCase = charsets.lowerCase;
 // var specialCharacters = charsets.specialCharacters;
-upperCase = charsets.upperCase;
-numbers = charsets.numbers;
 
-var containsAtLeastPolicy = new PasswordPolicy({
+const containsAtLeastPolicy = new PasswordPolicy({
     containsAtLeast: {
         atLeast: 2,
         expressions: [lowerCase, upperCase, numbers],
@@ -89,7 +82,7 @@ assert.equal(true, containsAtLeastPolicy.check('HELLOhello123'));
  *
  * Passwords should not contain any character repeated continuously `max + 1` times.
  */
-var identitcalCharsPolicy = new PasswordPolicy({
+const identitcalCharsPolicy = new PasswordPolicy({
     identicalChars: {
         max: 3,
     },
