@@ -7,7 +7,7 @@ var PasswordPolicy = require('..').PasswordPolicy;
  *  * contains
  *  * containsAtLeast
  *  * identicalChars
-*/
+ */
 
 /*
  * length
@@ -39,13 +39,14 @@ var charsets = require('../lib/rules/contains').charsets;
 
 // var lowerCase         = charsets.lowerCase;
 // var specialCharacters = charsets.specialCharacters;
-var upperCase         = charsets.upperCase;
-var numbers           = charsets.numbers;
+var upperCase = charsets.upperCase;
+var numbers = charsets.numbers;
 
-
-var containsPolicy = new PasswordPolicy({contains: {
-  expressions: [upperCase, numbers]
-}});
+var containsPolicy = new PasswordPolicy({
+    contains: {
+        expressions: [upperCase, numbers],
+    },
+});
 
 assert.equal(false, containsPolicy.check('foo'));
 assert.equal(false, containsPolicy.check('Bar'));
@@ -63,24 +64,23 @@ assert.equal(true, containsPolicy.check('B9'));
 
 var charsets = require('../lib/rules/containsAtLeast').charsets;
 
-var lowerCase         = charsets.lowerCase;
+var lowerCase = charsets.lowerCase;
 // var specialCharacters = charsets.specialCharacters;
-upperCase         = charsets.upperCase;
-numbers           = charsets.numbers;
+upperCase = charsets.upperCase;
+numbers = charsets.numbers;
 
 var containsAtLeastPolicy = new PasswordPolicy({
-  containsAtLeast: {
-    atLeast: 2,
-    expressions: [ lowerCase, upperCase, numbers ]
-  }
+    containsAtLeast: {
+        atLeast: 2,
+        expressions: [lowerCase, upperCase, numbers],
+    },
 });
 
 assert.equal(false, containsAtLeastPolicy.check('hello'));
 assert.equal(false, containsAtLeastPolicy.check('387'));
-assert.equal(true,  containsAtLeastPolicy.check('387hello'));
-assert.equal(true,  containsAtLeastPolicy.check('HELLOhello'));
-assert.equal(true,  containsAtLeastPolicy.check('HELLOhello123'));
-
+assert.equal(true, containsAtLeastPolicy.check('387hello'));
+assert.equal(true, containsAtLeastPolicy.check('HELLOhello'));
+assert.equal(true, containsAtLeastPolicy.check('HELLOhello123'));
 
 /*
  * identicalChars
@@ -90,9 +90,9 @@ assert.equal(true,  containsAtLeastPolicy.check('HELLOhello123'));
  * Passwords should not contain any character repeated continuously `max + 1` times.
  */
 var identitcalCharsPolicy = new PasswordPolicy({
-  identicalChars: {
-    max: 3
-  }
+    identicalChars: {
+        max: 3,
+    },
 });
 
 assert.equal(true, identitcalCharsPolicy.check('hello'));
@@ -100,4 +100,3 @@ assert.equal(true, identitcalCharsPolicy.check('hellol'));
 assert.equal(true, identitcalCharsPolicy.check('helllo'));
 assert.equal(false, identitcalCharsPolicy.check('hellllo'));
 assert.equal(false, identitcalCharsPolicy.check('123333334'));
-

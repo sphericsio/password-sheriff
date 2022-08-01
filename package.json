@@ -7,16 +7,26 @@
   "files": [
     "lib"
   ],
+  "prettier": "@sphericsio/eslint-config/lib/prettier",
   "repository": {
     "type": "git",
     "url": "git://github.com/sphericsio/password-sheriff"
   },
   "devDependencies": {
+    "@sphericsio/eslint-config": "0.1.8",
+    "@sphericsio/tsconfig": "0.1.5",
+    "@typescript-eslint/eslint-plugin": "4.22.0",
     "chai": "^4.3.4",
-    "mocha": "^9.1.1"
+    "eslint": "7.10.0",
+    "eslint-plugin-mocha": "^10.1.0",
+    "eslint-plugin-prettier": "3.4.0",
+    "mocha": "^9.1.1",
+    "prettier": "2.2.1",
+    "typescript": "4.2.4"
   },
   "scripts": {
     "test": "mocha --recursive",
-    "prepack": "npm test"
+    "prepack": "npm test",
+    "lint": "eslint \"**/*.[j|t]s\""
   }
 }
