@@ -2,7 +2,8 @@
   "name": "@sphericsio/password-sheriff",
   "description": "Password policy checker/enforcer.",
   "version": "1.1.1",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "license": "MIT",
   "files": [
     "lib"
@@ -30,8 +31,10 @@
   },
   "scripts": {
     "test": "mocha -r ts-eager/register --extension ts --recursive",
-    "prepack": "npm test",
-    "lint": "eslint \"**/*.[j|t]s\""
+    "prepack": "yarn test",
+    "lint": "eslint \"**/*.[j|t]s\"",
+    "build": "tsc",
+    "prepublish": "yarn build"
   },
   "dependencies": {
     "lodash": "^4.17.21"
