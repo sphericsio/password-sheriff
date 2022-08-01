@@ -5,10 +5,10 @@ import createPolicy from '../..';
 const goodPolicyDescription =
     '* At least 8 characters in length\n' +
     '* At least 3 of the following 4 types of characters:\n' +
-    ' * lower case letters (a-z)\n' +
-    ' * upper case letters (A-Z)\n' +
-    ' * numbers (i.e. 0-9)\n' +
-    ' * special characters (e.g. !@#$%^&*)';
+    '  * lower case letters (a-z)\n' +
+    '  * upper case letters (A-Z)\n' +
+    '  * numbers (i.e. 0-9)\n' +
+    '  * special characters (e.g. !@#$%^&*)';
 
 describe('good policy:\n' + goodPolicyDescription, function () {
     describe('check', function () {

@@ -5,10 +5,10 @@ import createPolicy from '../..';
 const excellentPolicyDescription =
     '* At least 10 characters in length\n' +
     '* At least 3 of the following 4 types of characters:\n' +
-    ' * lower case letters (a-z)\n' +
-    ' * upper case letters (A-Z)\n' +
-    ' * numbers (i.e. 0-9)\n' +
-    ' * special characters (e.g. !@#$%^&*)\n' +
+    '  * lower case letters (a-z)\n' +
+    '  * upper case letters (A-Z)\n' +
+    '  * numbers (i.e. 0-9)\n' +
+    '  * special characters (e.g. !@#$%^&*)\n' +
     '* No more than 2 identical characters in a row (e.g., "aaa" not allowed)';
 
 describe('excellent policy:\n' + excellentPolicyDescription, function () {

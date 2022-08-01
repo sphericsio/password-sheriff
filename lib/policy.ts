@@ -18,7 +18,7 @@ function flatDescriptions(descriptions: PasswordPolicyRuleExplaination[], index:
     }
 
     function flatSingleDescription(description: PasswordPolicyRuleExplaination, index: number) {
-        const spaces = new Array(index + 1).join(' ');
+        const spaces = new Array(index + 1).join('  ');
         let result = spaces + '* ';
         if (description.format) {
             result += format(description.message, ...description.format);

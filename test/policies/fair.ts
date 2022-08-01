@@ -5,9 +5,9 @@ import createPolicy from '../..';
 const fairPolicyDescription =
     '* At least 8 characters in length\n' +
     '* Should contain:\n' +
-    ' * lower case letters (a-z)\n' +
-    ' * upper case letters (A-Z)\n' +
-    ' * numbers (i.e. 0-9)';
+    '  * lower case letters (a-z)\n' +
+    '  * upper case letters (A-Z)\n' +
+    '  * numbers (i.e. 0-9)';
 
 describe('fair policy:\n' + fairPolicyDescription, function () {
     const policy = createPolicy('fair');
