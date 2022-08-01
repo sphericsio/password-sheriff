@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "license": "MIT",
   "files": [
-    "lib"
+    "dist"
   ],
   "prettier": "@sphericsio/eslint-config/lib/prettier",
   "repository": {
